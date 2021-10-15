@@ -3,6 +3,9 @@ node_modules
 coverage
 coverage.json
 typechain
+projectId.js
+.key
+
 
 #Hardhat files
 cache
