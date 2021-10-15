@@ -15,9 +15,23 @@ npx hardhat help
 ```
 
 # Marketplace Contracts
-
-Marketplace.sol
-
 ```sol
+getListingPrice() public view returns (uint256)
 
+createMarketItem(
+        address nftContract,
+        uint256 tokenId,
+        uint256 price
+    ) public payable nonReentrant 
+    
+createMarketSale(address nftContract, uint256 itemId)
+        public
+        payable
+        nonReentrant
+        
+fetchMarketItems() public view returns (MarketItem[] memory)
+
+fetchMyNFTs() public view returns (MarketItem[] memory)
+
+fetchItemsCreated() public view returns (MarketItem[] memory)
 ```
