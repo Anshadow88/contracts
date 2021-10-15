@@ -15,7 +15,7 @@ npx hardhat help
 ```
 
 # Marketplace Contracts
-
+```sol
 getListingPrice() public view returns (uint256)
 
 createMarketItem(
@@ -34,8 +34,4 @@ fetchMarketItems() public view returns (MarketItem[] memory)
 fetchMyNFTs() public view returns (MarketItem[] memory)
 
 fetchItemsCreated() public view returns (MarketItem[] memory)
-
-
-```sol
-
 ```
