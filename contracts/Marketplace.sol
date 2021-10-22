@@ -13,7 +13,8 @@ contract Marketplace is ReentrancyGuard {
     Counters.Counter private _itemsSold;
 
     address payable owner;
-    uint256 listingPrice = 0.00 ether;
+
+    // uint256 listingPrice = 0.00 ether;
 
     constructor() {
         owner = payable(msg.sender);
@@ -40,9 +41,9 @@ contract Marketplace is ReentrancyGuard {
         bool sold
     );
 
-    function getListingPrice() public view returns (uint256) {
-        return listingPrice;
-    }
+    // function getListingPrice() public view returns (uint256) {
+    //     return listingPrice;
+    // }
 
     function createMarketItem(
         address nftContract,
@@ -50,10 +51,10 @@ contract Marketplace is ReentrancyGuard {
         uint256 price
     ) public payable nonReentrant {
         require(price > 0, "Price must be more than 0");
-        require(
-            msg.value == listingPrice,
-            "Price must be equal to listing price"
-        );
+        // require(
+        //     msg.value == listingPrice,
+        //     "Price must be equal to listing price"
+        // );
 
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
@@ -95,7 +96,7 @@ contract Marketplace is ReentrancyGuard {
         idToMarketItem[itemId].owner = payable(msg.sender);
         idToMarketItem[itemId].sold = true;
         _itemsSold.increment();
-        payable(owner).transfer(listingPrice);
+        // payable(owner).transfer(listingPrice);
     }
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
