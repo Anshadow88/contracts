@@ -20,7 +20,9 @@ module.exports = {
       chainId: 1337,
     },
     mumbai: {
-      url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
+      url: "https://polygon-mumbai.g.alchemy.com/v2/klOlNm_rQCabx94IjAdS_ZBHzNCkRXFX",
+      //url: "https://rpc-mumbai.matic.today",
+      //url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
       accounts: [privateKey],
     },
     mainnet: {

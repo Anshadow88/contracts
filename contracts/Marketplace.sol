@@ -86,6 +86,10 @@ contract Marketplace is ReentrancyGuard {
         payable
         nonReentrant
     {
+        require(
+            msg.sender != idToMarketItem[itemId].owner,
+            "you cannot buy this item, this is your's"
+        );
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
 
@@ -161,4 +165,7 @@ contract Marketplace is ReentrancyGuard {
         }
         return items;
     }
+
+    // function fetchOwners() public view returns (address[] memory) {
+    // }
 }
