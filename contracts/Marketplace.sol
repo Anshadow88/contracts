@@ -14,7 +14,7 @@ contract Marketplace is ReentrancyGuard {
 
     address payable owner;
 
-    // uint256 listingPrice = 0.00 ether;
+    uint256 platformCommission = 0.00 ether;
 
     constructor() {
         owner = payable(msg.sender);
@@ -41,10 +41,6 @@ contract Marketplace is ReentrancyGuard {
         bool sold
     );
 
-    // function getListingPrice() public view returns (uint256) {
-    //     return listingPrice;
-    // }
-
     function createMarketItem(
         address nftContract,
         uint256 tokenId,
@@ -55,7 +51,7 @@ contract Marketplace is ReentrancyGuard {
         //     msg.value == listingPrice,
         //     "Price must be equal to listing price"
         // );
-
+        console.log("Token created by: ", msg.sender);
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
 
@@ -124,7 +120,7 @@ contract Marketplace is ReentrancyGuard {
         uint256 totalItemCount = _itemIds.current();
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
-
+        console.log("Sender :", msg.sender);
         for (uint256 i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i + 1].owner == msg.sender) {
                 itemCount += 1;
@@ -165,9 +161,6 @@ contract Marketplace is ReentrancyGuard {
         }
         return items;
     }
-    
-
-    
 
     // function fetchOwners() public view returns (address[] memory) {
     // }
