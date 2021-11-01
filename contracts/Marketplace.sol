@@ -4,6 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 import "hardhat/console.sol";
 
@@ -14,12 +15,24 @@ contract Marketplace is ReentrancyGuard {
 
     address payable owner;
 
-    uint256 platformCommission = 0.00 ether;
+    uint256 platformCommission = 5;
 
     constructor() {
         owner = payable(msg.sender);
     }
 
+    struct Item {
+        uint256 itemId;
+        uint256 nftContract;
+        uint256 tokenId;
+        address payable seller;
+        address payable owner;
+        uint256 price;
+        bool forSale;
+    }
+
+    mapping(uint256 => Item) private idToItem;
+    event NFTforSaleEvent(uint256 indexed itemId);
     struct MarketItem {
         uint256 itemId;
         address nftContract;
@@ -47,10 +60,7 @@ contract Marketplace is ReentrancyGuard {
         uint256 price
     ) public payable nonReentrant {
         require(price > 0, "Price must be more than 0");
-        // require(
-        //     msg.value == listingPrice,
-        //     "Price must be equal to listing price"
-        // );
+
         console.log("Token created by: ", msg.sender);
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
@@ -161,7 +171,4 @@ contract Marketplace is ReentrancyGuard {
         }
         return items;
     }
-
-    // function fetchOwners() public view returns (address[] memory) {
-    // }
 }
