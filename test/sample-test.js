@@ -18,14 +18,20 @@ describe("Marketplace", function () {
     const auctionPrice = ethers.utils.parseUnits('1', 'ether');
 
     // sample test image
-    await nft.createToken("https://www.logo.wine/a/logo/Ethereum/Ethereum-Icon-Purple-Logo.wine.svg");
-    await nft.createToken("https://www.logo.wine/a/logo/Ethereum/Ethereum-Icon-Purple-Logo.wine.svg");
-    await nft.createToken("https://www.logo.wine/a/logo/Ethereum/Ethereum-Icon-Purple-Logo.wine.svg");
 
+    const tokenURI = `https://ipfs.infura.io/ipfs/QmfUBp86GDvxRxruDur5uJmUfi5BK3gyYSYK5iSrrTzbtA`;
+    let transaction = await nft.createToken(tokenURI);
+    let tx = await transaction.wait();
+    let event = tx.events[0];
+    let value = event.args[2];
+    let tokenId = value.toNumber();
+
+    console.log("tokenId: ", tokenId);
     // await market.createMarketItem(nftContractAddress, 1, auctionPrice, { value: listingPrice });
-    await market.createMarketItem(nftContractAddress, 1, auctionPrice);
-    await market.createMarketItem(nftContractAddress, 2, auctionPrice);
-    await market.createMarketItem(nftContractAddress, 3, auctionPrice);
+    transaction = await market.listItemForSale(nftContractAddress, tokenId, auctionPrice, true);
+    await transaction.wait();
+    //await market.createMarketItem(nftContractAddress, 1, auctionPrice);
+
     const [_, buyerAddress] = await ethers.getSigners();
 
     var items = await market.fetchMarketItems()

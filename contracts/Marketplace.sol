@@ -14,7 +14,7 @@ contract Marketplace is ReentrancyGuard {
 
     address payable owner;
 
-    uint256 platformCommission = 0.00 ether;
+    uint256 platformCommission = 5;
 
     constructor() {
         owner = payable(msg.sender);
@@ -52,28 +52,28 @@ contract Marketplace is ReentrancyGuard {
         bool forSale
     );
 
-    function listMyToken(
-        address nftContract,
-        uint256 tokenId,
-        uint256 price
-    ) public payable nonReentrant {
-        require(price > 0, "Price must be more than zero");
-        _itemIds.increment();
-        console.log(owner);
-        console.log("address(this) : ", address(this));
-        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
-        emit MarketItemListed(
-            _itemIds.current(),
-            nftContract,
-            tokenId,
-            payable(msg.sender),
-            payable(owner),
-            price,
-            true
-        );
-    }
+    // function listMyToken(
+    //     address nftContract,
+    //     uint256 tokenId,
+    //     uint256 price
+    // ) public payable nonReentrant {
+    //     require(price > 0, "Price must be more than zero");
+    //     _itemIds.increment();
+    //     console.log(owner);
+    //     console.log("address(this) : ", address(this));
+    //     IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
+    //     emit MarketItemListed(
+    //         _itemIds.current(),
+    //         nftContract,
+    //         tokenId,
+    //         payable(msg.sender),
+    //         payable(owner),
+    //         price,
+    //         true
+    //     );
+    // }
 
-    function createMarketItem(
+    function listItemForSale(
         address nftContract,
         uint256 tokenId,
         uint256 price,
@@ -85,6 +85,7 @@ contract Marketplace is ReentrancyGuard {
         //     "Price must be equal to listing price"
         // );
         console.log("Token created by: ", msg.sender);
+        console.log("balance owner", owner.balance / (1000000000000000000));
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
 
@@ -93,7 +94,7 @@ contract Marketplace is ReentrancyGuard {
             nftContract,
             tokenId,
             payable(msg.sender),
-            payable(address(0)),
+            payable(owner),
             price,
             forSale
         );
@@ -104,7 +105,7 @@ contract Marketplace is ReentrancyGuard {
             nftContract,
             tokenId,
             payable(msg.sender),
-            payable(address(0)),
+            payable(owner),
             price,
             forSale
         );
@@ -119,13 +120,22 @@ contract Marketplace is ReentrancyGuard {
             msg.sender != idToMarketItem[itemId].owner,
             "you cannot buy this item, this is your's"
         );
+        require(idToMarketItem[itemId].forSale == true, "not for sale");
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
 
         require(msg.value == price, "Pay the price.");
+        console.log("msg.value", msg.value); // gwei
+        idToMarketItem[itemId].seller.transfer((msg.value * 95) / 100);
+        console.log(
+            "Price paid to idToMarketItem[itemId].seller",
+            (msg.value * 95) / 100
+        );
 
-        idToMarketItem[itemId].seller.transfer(msg.value);
+        owner.transfer((msg.value * 5) / 100);
+        console.log("Price paid to owner", (msg.value * 5) / 100);
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+
         idToMarketItem[itemId].owner = payable(msg.sender);
         idToMarketItem[itemId].forSale = false;
         _itemsSold.increment();
