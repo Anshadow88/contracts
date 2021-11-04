@@ -27,10 +27,11 @@ contract Marketplace is ReentrancyGuard {
         address payable seller;
         address payable owner;
         uint256 price;
-        bool sold;
+        bool forSale;
     }
 
     mapping(uint256 => MarketItem) private idToMarketItem;
+
     event MarketItemCreated(
         uint256 itemId,
         address nftContract,
@@ -38,13 +39,45 @@ contract Marketplace is ReentrancyGuard {
         address payable seller,
         address payable owner,
         uint256 price,
-        bool sold
+        bool forSale
     );
+
+    event MarketItemListed(
+        address itemId,
+        address nftContract,
+        uint256 tokenId,
+        address payable seller,
+        address payable owner,
+        uint256 price,
+        bool forSale
+    );
+
+    function listMyToken(
+        address nftContract,
+        uint256 tokenId,
+        uint256 price
+    ) public payable nonReentrant {
+        require(price > 0, "Price must be more than zero");
+        _itemIds.increment();
+        console.log(owner);
+        console.log("address(this) : ", address(this));
+        IERC721(nftCotract).transferFrom(msg.sender, address(this), tokenId);
+        emit MarketItemListed(
+            _itemIds.current(),
+            nftContract,
+            tokenId,
+            payable(msg.sender),
+            payable(owner),
+            price,
+            forSale
+        );
+    }
 
     function createMarketItem(
         address nftContract,
         uint256 tokenId,
-        uint256 price
+        uint256 price,
+        bool forSale
     ) public payable nonReentrant {
         require(price > 0, "Price must be more than 0");
         // require(
@@ -62,7 +95,7 @@ contract Marketplace is ReentrancyGuard {
             payable(msg.sender),
             payable(address(0)),
             price,
-            false
+            forSale
         );
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
@@ -73,7 +106,7 @@ contract Marketplace is ReentrancyGuard {
             payable(msg.sender),
             payable(address(0)),
             price,
-            false
+            forSale
         );
     }
 
