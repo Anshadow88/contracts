@@ -71,7 +71,6 @@ contract Marketplace is ReentrancyGuard {
     //         price,
     //         true
     //     );
-    // }
 
     function listItemForSale(
         address nftContract,
