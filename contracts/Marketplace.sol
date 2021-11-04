@@ -43,7 +43,7 @@ contract Marketplace is ReentrancyGuard {
     );
 
     event MarketItemListed(
-        address itemId,
+        uint256 itemId,
         address nftContract,
         uint256 tokenId,
         address payable seller,
@@ -61,7 +61,7 @@ contract Marketplace is ReentrancyGuard {
         _itemIds.increment();
         console.log(owner);
         console.log("address(this) : ", address(this));
-        IERC721(nftCotract).transferFrom(msg.sender, address(this), tokenId);
+        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
         emit MarketItemListed(
             _itemIds.current(),
             nftContract,
@@ -69,7 +69,7 @@ contract Marketplace is ReentrancyGuard {
             payable(msg.sender),
             payable(owner),
             price,
-            forSale
+            true
         );
     }
 
@@ -127,7 +127,7 @@ contract Marketplace is ReentrancyGuard {
         idToMarketItem[itemId].seller.transfer(msg.value);
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         idToMarketItem[itemId].owner = payable(msg.sender);
-        idToMarketItem[itemId].sold = true;
+        idToMarketItem[itemId].forSale = false;
         _itemsSold.increment();
         // payable(owner).transfer(listingPrice);
     }
