@@ -29,6 +29,10 @@ module.exports = {
       url: `https://polygon-mainnet.infura.io/v3/${projectId}`,
       accounts: [privateKey],
     },
+    ropsten: {
+      url: `https://eth-ropsten.alchemyapi.io/v2/77Wy8P0Ua9eWbtADqxk67t_anh5pHPAv`,
+      accounts: [privateKey],
+    }
   },
   solidity: "0.8.4",
 };
