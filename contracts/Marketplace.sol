@@ -10,7 +10,7 @@ import "hardhat/console.sol";
 contract Marketplace is ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
-    Counters.Counter private _itemsSold;
+    // Counters.Counter private _itemsSold;
 
     address payable owner;
 
