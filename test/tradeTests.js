@@ -19,14 +19,15 @@ describe("Marketplace", function () {
 
     // sample test image
 
-    const tokenURI = `https://ipfs.infura.io/ipfs/QmfUBp86GDvxRxruDur5uJmUfi5BK3gyYSYK5iSrrTzbtA`;
+    const tokenURI = `https://bafybeidff4iuuyvzi67olw6cbibcolmrm25gfmcyxag4ziwdpnm2wedlkq.ipfs.infura-ipfs.io/`;
     let transaction = await nft.createToken(tokenURI);
     let tx = await transaction.wait();
+    console.log(`\ntx: ${tx}\n`);
     let event = tx.events[0];
     let value = event.args[2];
     let tokenId = value.toNumber();
 
-    console.log("tokenId: ", tokenId);
+    console.log("Token created", tokenId);
     // await market.createMarketItem(nftContractAddress, 1, auctionPrice, { value: listingPrice });
     transaction = await market.listItemForSale(nftContractAddress, tokenId, auctionPrice, true);
     await transaction.wait();

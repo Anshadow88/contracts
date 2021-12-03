@@ -27,20 +27,9 @@ contract Marketplace is ReentrancyGuard {
         address payable seller;
         address payable owner;
         uint256 price;
-        bool forSale;
     }
 
     mapping(uint256 => MarketItem) private idToMarketItem;
-
-    event MarketItemCreated(
-        uint256 itemId,
-        address nftContract,
-        uint256 tokenId,
-        address payable seller,
-        address payable owner,
-        uint256 price,
-        bool forSale
-    );
 
     event MarketItemListed(
         uint256 itemId,
@@ -48,43 +37,24 @@ contract Marketplace is ReentrancyGuard {
         uint256 tokenId,
         address payable seller,
         address payable owner,
-        uint256 price,
-        bool forSale
+        uint256 price
     );
 
-    // function listMyToken(
-    //     address nftContract,
-    //     uint256 tokenId,
-    //     uint256 price
-    // ) public payable nonReentrant {
-    //     require(price > 0, "Price must be more than zero");
-    //     _itemIds.increment();
-    //     console.log(owner);
-    //     console.log("address(this) : ", address(this));
-    //     IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
-    //     emit MarketItemListed(
-    //         _itemIds.current(),
-    //         nftContract,
-    //         tokenId,
-    //         payable(msg.sender),
-    //         payable(owner),
-    //         price,
-    //         true
-    //     );
+    event MarketItemUnlisted(
+        uint256 itemId,
+        address nftContract,
+        uint256 tokenId,
+        address payable seller,
+        address payable owner,
+        uint256 price
+    );
 
     function listItemForSale(
         address nftContract,
         uint256 tokenId,
-        uint256 price,
-        bool forSale
+        uint256 price
     ) public payable nonReentrant {
         require(price > 0, "Price must be more than 0");
-        // require(
-        //     msg.value == listingPrice,
-        //     "Price must be equal to listing price"
-        // );
-        console.log("Token created by: ", msg.sender);
-        console.log("balance owner", owner.balance / (1000000000000000000));
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
 
@@ -94,19 +64,35 @@ contract Marketplace is ReentrancyGuard {
             tokenId,
             payable(msg.sender),
             payable(owner),
-            price,
-            forSale
+            price
         );
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
-        emit MarketItemCreated(
+        emit MarketItemListed(
             itemId,
             nftContract,
             tokenId,
             payable(msg.sender),
             payable(owner),
-            price,
-            forSale
+            price
+        );
+    }
+
+    function unlistItemfromMarket(address nftContract, uint256 tokenId)
+        public
+        nonReentrant
+    {
+        require(idToMarketItem[tokenId].seller == msg.sender);
+        address seller = idToMarketItem[tokenId].seller;
+        IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+        _itemIds.decrement();
+        emit MarketItemUnlisted(
+            itemId,
+            nftContract,
+            tokenId,
+            payable(seller),
+            payable(owner),
+            price
         );
     }
 
@@ -119,10 +105,8 @@ contract Marketplace is ReentrancyGuard {
             msg.sender != idToMarketItem[itemId].owner,
             "you cannot buy this item, this is your's"
         );
-        require(idToMarketItem[itemId].forSale == true, "not for sale");
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
-
         require(msg.value == price, "Pay the price.");
         console.log("msg.value", msg.value); // gwei
         idToMarketItem[itemId].seller.transfer((msg.value * 95) / 100);
@@ -143,10 +127,9 @@ contract Marketplace is ReentrancyGuard {
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
         uint256 itemCount = _itemIds.current();
-        uint256 unsoldItemCount = _itemIds.current() - _itemsSold.current();
         uint256 currentIndex = 0;
 
-        MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+        MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < itemCount; i++) {
             if (idToMarketItem[i + 1].owner == address(0)) {
                 uint256 currentId = idToMarketItem[i + 1].itemId;
