@@ -14,8 +14,6 @@ contract Marketplace is ReentrancyGuard {
 
     address payable owner;
 
-    uint256 platformCommission = 5;
-
     constructor() {
         owner = payable(msg.sender);
     }
@@ -123,6 +121,10 @@ contract Marketplace is ReentrancyGuard {
         idToMarketItem[itemId].forSale = false;
         _itemsSold.increment();
         // payable(owner).transfer(listingPrice);
+    }
+
+    function fetchTokensForSale() public view returns (MarketItem[] memory) {
+        uint256 itemCount = _itemIds.current();
     }
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
