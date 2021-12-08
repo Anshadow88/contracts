@@ -19,7 +19,7 @@ describe("Marketplace", function () {
 
     // sample test image
 
-    const tokenURI = `https://bafybeidff4iuuyvzi67olw6cbibcolmrm25gfmcyxag4ziwdpnm2wedlkq.ipfs.infura-ipfs.io/`;
+    var tokenURI = `https://bafybeidff4iuuyvzi67olw6cbibcolmrm25gfmcyxag4ziwdpnm2wedlkq.ipfs.infura-ipfs.io/`;
     let transaction = await nft.createToken(tokenURI);
     let tx = await transaction.wait();
     console.log(`\ntx: ${tx}\n`);
@@ -29,7 +29,7 @@ describe("Marketplace", function () {
 
     console.log("Token created", tokenId);
     // await market.createMarketItem(nftContractAddress, 1, auctionPrice, { value: listingPrice });
-    transaction = await market.listItemForSale(nftContractAddress, tokenId, auctionPrice, true);
+    transaction = await market.listItemForSale(nftContractAddress, tokenId, 2);
     await transaction.wait();
     //await market.createMarketItem(nftContractAddress, 1, auctionPrice);
 
