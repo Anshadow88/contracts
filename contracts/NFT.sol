@@ -9,8 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract NFT is ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256 private tokenID;
 
     address contractAddress;
     address public creator;
@@ -22,6 +21,7 @@ contract NFT is ERC721URIStorage {
         ERC721("mercado Tokens", "mercadoNFT")
     {
         contractAddress = marketplaceAddress;
+        tokenID = 0;
     }
 
     function setExcluded(address excluded, bool status) external {
@@ -35,12 +35,13 @@ contract NFT is ERC721URIStorage {
         address _txFeeToken,
         uint256 _txFeeAmount
     ) public returns (uint256) {
-        _tokenIds.increment();
+        //_tokenIds.increment();
+        tokenID += 1;
         creator = _creator;
         txFeeToken = _txFeeToken;
         txFeeAmount = _txFeeAmount;
         excludedList[_creator] = true;
-        uint256 newItemId = _tokenIds.current();
+        uint256 newItemId = tokenID;
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, tokenURI);
         setApprovalForAll(contractAddress, true);
