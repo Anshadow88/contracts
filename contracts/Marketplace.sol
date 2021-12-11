@@ -16,9 +16,7 @@ contract Marketplace is ReentrancyGuard {
 
     address payable owner;
 
-    /**
-    Polygon WETH: 0x7ceb23fd6bc0add59e62ac25578270cff1b9f619
-     */
+    // Polygon WETH: 0x7ceb23fd6bc0add59e62ac25578270cff1b9f619
     IERC20 constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
     address public CreateLabs = 0x32362F1fc149ce0B5c2B6ccE6aa70628012674cD;
 
