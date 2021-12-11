@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./IWETH.sol";
 
 import "hardhat/console.sol";
 
@@ -16,20 +15,16 @@ contract Marketplace is ReentrancyGuard {
     uint256[] itemsSoldOrUnlisted;
 
     address payable owner;
-    IERC20 public weth;
-    address public WETHAddress = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619;
-    address public CreateLabs = 0x77D2538297DC7a67c39B77bDbAD7c5267E0a156c;
 
     /**
     Polygon WETH: 0x7ceb23fd6bc0add59e62ac25578270cff1b9f619
      */
+    IERC20 constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
+    address public CreateLabs = 0x32362F1fc149ce0B5c2B6ccE6aa70628012674cD;
 
     constructor() {
         owner = payable(msg.sender);
-        weth = ERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
     }
-
-    // uint8 royalty = 8;
 
     struct MarketItem {
         uint256 itemId;
@@ -115,7 +110,6 @@ contract Marketplace is ReentrancyGuard {
 
     function createMarketSale(address nftContract, uint256 itemId)
         public
-        payable
         nonReentrant
     {
         require(
@@ -125,16 +119,16 @@ contract Marketplace is ReentrancyGuard {
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
 
-        require(weth.balanceOf(msg.sender) >= price, "Pay the price.");
+        require(WETH.balanceOf(msg.sender) >= price, "Pay the price.");
 
-        weth.transferFrom(
+        WETH.transferFrom(
             msg.sender,
             idToMarketItem[itemId].seller,
             (price * 95) / 100
         );
 
-        weth.transferFrom(msg.sender, CreateLabs, (price * 5) / 100);
-        console.log("Price paid to owner", (msg.value * 5) / 100);
+        WETH.transferFrom(msg.sender, CreateLabs, (price * 5) / 100);
+        // console.log("Price paid to owner", (msg.value * 5) / 100);
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
 
         idToMarketItem[itemId].creator = payable(msg.sender);
@@ -167,7 +161,6 @@ contract Marketplace is ReentrancyGuard {
         uint256 totalItemCount = _itemIds.current();
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
-        console.log("Sender :", msg.sender);
         for (uint256 i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i + 1].seller == msg.sender) {
                 itemCount += 1;
