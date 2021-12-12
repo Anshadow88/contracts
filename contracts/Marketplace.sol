@@ -11,7 +11,8 @@ import "hardhat/console.sol";
 
 contract Marketplace is ReentrancyGuard {
     using Counters for Counters.Counter;
-    Counters.Counter private _itemIds;
+    uint256 private itemIds;
+    // Counters.Counter private _itemIds;
     uint256[] itemsSoldOrUnlisted;
 
     address payable owner;
@@ -22,6 +23,7 @@ contract Marketplace is ReentrancyGuard {
 
     constructor() {
         owner = payable(msg.sender);
+        itemIds = 0;
     }
 
     struct MarketItem {
@@ -60,8 +62,9 @@ contract Marketplace is ReentrancyGuard {
         uint256 price
     ) public payable nonReentrant {
         require(price > 0, "Price must be more than 0");
-        _itemIds.increment();
-        uint256 itemId = _itemIds.current();
+        // _itemIds.increment();
+        itemIds += 1;
+        uint256 itemId = itemIds;
         idToMarketItem[itemId] = MarketItem(
             itemId,
             nftContract,
@@ -106,10 +109,7 @@ contract Marketplace is ReentrancyGuard {
         );
     }
 
-    function createMarketSale(address nftContract, uint256 itemId)
-        public
-        nonReentrant
-    {
+    function buyNFT(address nftContract, uint256 itemId) public nonReentrant {
         require(
             msg.sender != idToMarketItem[itemId].seller,
             "you cannot buy this item, this is your's"
@@ -141,7 +141,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     function fetchAllNFTs() public view returns (MarketItem[] memory) {
-        uint256 totalItemCount = _itemIds.current();
+        uint256 totalItemCount = itemIds;
         uint256 currentIndex = 0;
         MarketItem[] memory items = new MarketItem[](totalItemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
@@ -156,7 +156,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     function fetchMyNFTs() public view returns (MarketItem[] memory) {
-        uint256 totalItemCount = _itemIds.current();
+        uint256 totalItemCount = itemIds;
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
         for (uint256 i = 0; i < totalItemCount; i++) {

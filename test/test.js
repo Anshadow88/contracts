@@ -30,7 +30,6 @@ describe("Marketplace", function () {
     let event = tx.events[0];
     let value = event.args[2];
     let tokenId = value.toNumber();
-
     console.log("Token created", tokenId);
     // await market.createMarketItem(nftContractAddress, 1, auctionPrice, { value: listingPrice });
     transaction = await market.listItemForSale(nftContractAddress, tokenId, 2);

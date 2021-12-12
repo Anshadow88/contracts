@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract NFT is ERC721URIStorage {
-    uint256 private tokenID;
+    uint256 private tokenId;
 
     address contractAddress;
     address public creator;
@@ -21,7 +21,7 @@ contract NFT is ERC721URIStorage {
         ERC721("mercado Tokens", "mercadoNFT")
     {
         contractAddress = marketplaceAddress;
-        tokenID = 0;
+        tokenId = 0;
     }
 
     function setExcluded(address excluded, bool status) external {
@@ -36,12 +36,12 @@ contract NFT is ERC721URIStorage {
         uint256 _txFeeAmount
     ) public returns (uint256) {
         //_tokenIds.increment();
-        tokenID += 1;
+        tokenId += 1;
         creator = _creator;
         txFeeToken = _txFeeToken;
         txFeeAmount = _txFeeAmount;
         excludedList[_creator] = true;
-        uint256 newItemId = tokenID;
+        uint256 newItemId = tokenId;
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, tokenURI);
         setApprovalForAll(contractAddress, true);
@@ -49,34 +49,34 @@ contract NFT is ERC721URIStorage {
     }
 
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
+        address _from,
+        address _to,
+        uint256 _tokenId
     ) public override {
-        if (excludedList[from] == false) {
-            _payTxFee(from);
+        if (excludedList[_from] == false) {
+            _payTxFee(_from);
         }
-        safeTransferFrom(from, to, tokenId, "");
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
+        address _from,
+        address _to,
+        uint256 _tokenId,
         bytes memory _data
     ) public override {
         require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
+            _isApprovedOrOwner(_msgSender(), _tokenId),
             "ERC721: transfer caller is not owner nor approved"
         );
-        if (excludedList[from] == false) {
-            _payTxFee(from);
+        if (excludedList[_from] == false) {
+            _payTxFee(_from);
         }
-        _safeTransfer(from, to, tokenId, _data);
+        _safeTransfer(_from, _to, _tokenId, _data);
     }
 
-    function _payTxFee(address from) internal {
+    function _payTxFee(address _from) internal {
         IERC20 token = IERC20(txFeeToken);
-        token.transferFrom(from, creator, txFeeAmount);
+        token.transferFrom(_from, creator, txFeeAmount);
     }
 }
