@@ -3,6 +3,10 @@ const { ethers } = require("hardhat");
 
 describe("Marketplace", function () {
   it("Should create and execute market sales", async function () {
+    const admin, creator, buyer1, buyer2;
+    const sampleToken = await ethers.getContractFactory("MockToken");
+    const mockerc20 = await sampleToken.deploy();
+
     const Market = await ethers.getContractFactory("Marketplace");
     const market = await Market.deploy();
     await market.deployed();
