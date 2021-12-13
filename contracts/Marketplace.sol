@@ -31,19 +31,17 @@ contract Marketplace is ReentrancyGuard {
         address nftContract;
         uint256 tokenId;
         address payable seller;
-        address payable creator;
         uint256 price;
     }
 
     mapping(uint256 => MarketItem) private idToMarketItem;
-    mapping(uint256 => bool) private itemIdToBoolean;
+    mapping(uint256 => bool) private itemIdToBoolean; // true if the itemId exists, false otherwise
 
     event MarketItemListed(
         uint256 itemId,
         address nftContract,
         uint256 tokenId,
         address payable seller,
-        address payable creator,
         uint256 price
     );
 
@@ -52,7 +50,6 @@ contract Marketplace is ReentrancyGuard {
         address nftContract,
         uint256 tokenId,
         address payable seller,
-        address payable creator,
         uint256 price
     );
 
@@ -60,16 +57,14 @@ contract Marketplace is ReentrancyGuard {
         address nftContract,
         uint256 tokenId,
         uint256 price
-    ) public payable nonReentrant {
+    ) public nonReentrant {
         require(price > 0, "Price must be more than 0");
-        // _itemIds.increment();
         itemIds += 1;
         uint256 itemId = itemIds;
         idToMarketItem[itemId] = MarketItem(
             itemId,
             nftContract,
             tokenId,
-            payable(msg.sender),
             payable(msg.sender),
             price
         );
@@ -79,7 +74,6 @@ contract Marketplace is ReentrancyGuard {
             itemId,
             nftContract,
             tokenId,
-            payable(msg.sender),
             payable(msg.sender),
             price
         );
@@ -96,7 +90,6 @@ contract Marketplace is ReentrancyGuard {
         address seller = idToMarketItem[itemId].seller;
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
-        address creator = idToMarketItem[itemId].creator;
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         itemIdToBoolean[itemId] = false;
         emit MarketItemUnlisted(
@@ -104,7 +97,6 @@ contract Marketplace is ReentrancyGuard {
             nftContract,
             tokenId,
             payable(seller),
-            payable(creator),
             price
         );
     }
@@ -128,8 +120,6 @@ contract Marketplace is ReentrancyGuard {
         WETH.transferFrom(msg.sender, CreateLabs, (price * 5) / 100);
         // console.log("Price paid to owner", (msg.value * 5) / 100);
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
-
-        idToMarketItem[itemId].creator = payable(msg.sender);
     }
 
     function fetchIndividualNFT(uint256 itemId)
@@ -143,6 +133,10 @@ contract Marketplace is ReentrancyGuard {
     function fetchAllNFTs() public view returns (MarketItem[] memory) {
         uint256 totalItemCount = itemIds;
         uint256 currentIndex = 0;
+        // MarketItem[] memory items = new MarketItem[](totalItemCount);
+        // for (uint256 i = 0; i < totalItemCount; i++) {
+        //     if (itemIdToBoolean[i + 1] == true) {}
+        // }
         MarketItem[] memory items = new MarketItem[](totalItemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
             if (itemIdToBoolean[i + 1] == true) {
