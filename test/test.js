@@ -3,9 +3,15 @@ const { ethers } = require("hardhat");
 
 describe("Marketplace", function () {
   it("Should create and execute market sales", async function () {
-    const admin, creator, buyer1, buyer2;
-    const sampleToken = await ethers.getContractFactory("MockToken");
-    const mockerc20 = await sampleToken.deploy();
+    //const admin, creator, buyer1, buyer2, buyer3;
+    // const sampleToken = await ethers.getContractFactory("MockERC20");
+    // const mockerc20 = await sampleToken.deploy();
+    // await mockerc20.deployed();
+    // console.log("token deployed");
+    // token.transfer(buyer1.address, ethers.utils.parseUnits('500', 'ethers'));
+    // token.transfer(buyer2.address, ethers.utils.parseUnits('500', 'ethers'));
+
+    //console.log(token.balanceOf(buyer1.address));
 
     const Market = await ethers.getContractFactory("Marketplace");
     const market = await Market.deploy();
@@ -19,18 +25,11 @@ describe("Marketplace", function () {
     // let listingPrice = await market.getListingPrice();
     // listingPrice = listingPrice.toString();
 
-    const auctionPrice = ethers.utils.parseUnits('1', 'ether');
-
-    // sample test image
+    // const auctionPrice = ethers.utils.parseUnits('1', 'ether');
 
     var tokenURI = `https://bafybeidff4iuuyvzi67olw6cbibcolmrm25gfmcyxag4ziwdpnm2wedlkq.ipfs.infura-ipfs.io/`;
-    let transaction = await nft.createToken(tokenURI);
-    let tx = await transaction.wait();
-    console.log(`\ntx: ${tx}\n`);
-    let event = tx.events[0];
-    let value = event.args[2];
-    let tokenId = value.toNumber();
-    console.log("Token created", tokenId);
+    var transaction = await nft.createToken(tokenURI,);
+
     // await market.createMarketItem(nftContractAddress, 1, auctionPrice, { value: listingPrice });
     transaction = await market.listItemForSale(nftContractAddress, tokenId, 2);
     await transaction.wait();
@@ -52,7 +51,8 @@ describe("Marketplace", function () {
     // }))
     console.log("items before sale", items);
 
-    await market.connect(buyerAddress).createMarketSale(nftContractAddress, 1, { value: auctionPrice })
+
+    await market.connect(buyerAddress).listItemForSale(nftContractAddress, 1,)
 
     items = await market.fetchMarketItems()
     console.log("after sale: ", items);

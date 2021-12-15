@@ -18,8 +18,10 @@ contract Marketplace is ReentrancyGuard {
     address payable owner;
 
     // Polygon WETH: 0x7ceb23fd6bc0add59e62ac25578270cff1b9f619
-    IERC20 constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
-    address public CreateLabs = 0x32362F1fc149ce0B5c2B6ccE6aa70628012674cD;
+    IERC20 private constant WETH =
+        IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
+    address private constant CreateLabs =
+        0x32362F1fc149ce0B5c2B6ccE6aa70628012674cD;
 
     constructor() {
         owner = payable(msg.sender);
@@ -59,7 +61,7 @@ contract Marketplace is ReentrancyGuard {
         uint256 price
     ) public nonReentrant {
         require(price > 0, "Price must be more than 0");
-        itemIds += 1;
+        itemIds++;
         uint256 itemId = itemIds;
         idToMarketItem[itemId] = MarketItem(
             itemId,
@@ -109,7 +111,10 @@ contract Marketplace is ReentrancyGuard {
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
 
-        require(WETH.balanceOf(msg.sender) >= price, "Pay the price.");
+        require(WETH.balanceOf(msg.sender) >= price, "Insufficient balance");
+
+        uint256 allow = WETH.allowance(msg.sender, address(this));
+        require(allow >= price, "Insufficient allowance");
 
         WETH.transferFrom(
             msg.sender,
@@ -133,10 +138,6 @@ contract Marketplace is ReentrancyGuard {
     function fetchAllNFTs() public view returns (MarketItem[] memory) {
         uint256 totalItemCount = itemIds;
         uint256 currentIndex = 0;
-        // MarketItem[] memory items = new MarketItem[](totalItemCount);
-        // for (uint256 i = 0; i < totalItemCount; i++) {
-        //     if (itemIdToBoolean[i + 1] == true) {}
-        // }
         MarketItem[] memory items = new MarketItem[](totalItemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
             if (itemIdToBoolean[i + 1] == true) {

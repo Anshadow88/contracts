@@ -10,7 +10,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract NFT is ERC721URIStorage {
     uint256 private tokenId;
-
     address contractAddress;
     address public creator;
     address public txFeeToken;
