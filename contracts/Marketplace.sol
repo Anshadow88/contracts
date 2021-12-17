@@ -14,7 +14,7 @@ contract Marketplace is ReentrancyGuard {
     // Counters.Counter private _itemIds;
     // Polygon WETH: 0x7ceb23fd6bc0add59e62ac25578270cff1b9f619
     IERC20 private constant WETH =
-        IERC20(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+        IERC20(0x5FbDB2315678afecb367f032d93F642f64180aa3);
 
     //IERC20 private constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
     address private constant CreateLabs =

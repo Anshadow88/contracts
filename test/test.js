@@ -23,7 +23,6 @@ describe("Marketplace", function () {
     await nft.deployed();
     const nftContractAddress = nft.address;
 
-
     // NFT #1
     var tokenURI = `https://bafybeidff4iuuyvzi67olw6cbibcolmrm25gfmcyxag4ziwdpnm2wedlkq.ipfs.infura-ipfs.io/`;
     var txFeeToken = `0x0165878A594ca255338adfa4d48449f69242Eb8F`;
