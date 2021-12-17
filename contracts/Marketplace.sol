@@ -18,7 +18,7 @@ contract Marketplace is ReentrancyGuard {
 
     //IERC20 private constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
     address private constant CreateLabs =
-        0x77D2538297DC7a67c39B77bDbAD7c5267E0a156c;
+        0x32362F1fc149ce0B5c2B6ccE6aa70628012674cD;
 
     constructor() {
         itemIds = 0;
@@ -102,13 +102,14 @@ contract Marketplace is ReentrancyGuard {
         );
     }
 
-    function buyNFT(address nftContract, uint256 itemId) public nonReentrant {
+    function buyNFT(uint256 itemId) public nonReentrant {
         require(
             msg.sender != idToMarketItem[itemId].seller,
             "you cannot buy this item, this is your's"
         );
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
+        address nftContract = idToMarketItem[itemId].nftContract;
 
         require(WETH.balanceOf(msg.sender) >= price, "Insufficient balance");
 

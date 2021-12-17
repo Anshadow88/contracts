@@ -8,7 +8,7 @@ describe("Marketplace", function () {
     const mockerc20 = await sampleERC20.deploy(10 ^ 7);
     await mockerc20.deployed();
     console.log("token address: ", mockerc20.address);
-    await mockerc20.transfer(buyer1.address, 10);
+    await mockerc20.transfer(buyer1.address, 10000);
     await mockerc20.transfer(buyer2.address, 10);
     let totalsupply = await mockerc20.totalSupply();
     console.log("total supply: ", totalsupply);
