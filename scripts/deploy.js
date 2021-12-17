@@ -14,10 +14,6 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile
   // manually to make sure everything is compiled
   // await hre.run('compile');
-  const mockERC20 = await hre.ethers.getContractFactory("MockERC20");
-  const token = await mockERC20.deploy();
-  await token.deployed();
-  console.log("mock erc20 token deployed to: ", token.address);
   // We get the contract to deploy
   const Marketplace = await hre.ethers.getContractFactory("Marketplace");
   const market = await Marketplace.deploy();

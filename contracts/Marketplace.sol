@@ -10,21 +10,17 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
 
 contract Marketplace is ReentrancyGuard {
-    using Counters for Counters.Counter;
     uint256 private itemIds;
     // Counters.Counter private _itemIds;
-    uint256[] itemsSoldOrUnlisted;
-
-    address payable owner;
-
     // Polygon WETH: 0x7ceb23fd6bc0add59e62ac25578270cff1b9f619
     IERC20 private constant WETH =
-        IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
+        IERC20(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+
+    //IERC20 private constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
     address private constant CreateLabs =
-        0x32362F1fc149ce0B5c2B6ccE6aa70628012674cD;
+        0x77D2538297DC7a67c39B77bDbAD7c5267E0a156c;
 
     constructor() {
-        owner = payable(msg.sender);
         itemIds = 0;
     }
 
@@ -32,7 +28,7 @@ contract Marketplace is ReentrancyGuard {
         uint256 itemId;
         address nftContract;
         uint256 tokenId;
-        address payable seller;
+        address seller;
         uint256 price;
     }
 
@@ -43,7 +39,7 @@ contract Marketplace is ReentrancyGuard {
         uint256 itemId,
         address nftContract,
         uint256 tokenId,
-        address payable seller,
+        address seller,
         uint256 price
     );
 
@@ -51,11 +47,11 @@ contract Marketplace is ReentrancyGuard {
         uint256 itemId,
         address nftContract,
         uint256 tokenId,
-        address payable seller,
+        address seller,
         uint256 price
     );
 
-    function listItemForSale(
+    function list(
         address nftContract,
         uint256 tokenId,
         uint256 price
@@ -67,11 +63,13 @@ contract Marketplace is ReentrancyGuard {
             itemId,
             nftContract,
             tokenId,
-            payable(msg.sender),
+            msg.sender,
             price
         );
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
+
+        itemIdToBoolean[itemId] = true;
         emit MarketItemListed(
             itemId,
             nftContract,
@@ -81,7 +79,7 @@ contract Marketplace is ReentrancyGuard {
         );
     }
 
-    function unlistItemfromMarket(address nftContract, uint256 itemId)
+    function unlistItem(uint256 itemId)
         public
         nonReentrant
     {
@@ -92,6 +90,7 @@ contract Marketplace is ReentrancyGuard {
         address seller = idToMarketItem[itemId].seller;
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
+        address nftContract = idToMarketItem[itemId].nftContract;
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         itemIdToBoolean[itemId] = false;
         emit MarketItemUnlisted(
@@ -125,6 +124,7 @@ contract Marketplace is ReentrancyGuard {
         WETH.transferFrom(msg.sender, CreateLabs, (price * 5) / 100);
         // console.log("Price paid to owner", (msg.value * 5) / 100);
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+        itemIdToBoolean[itemId] = false;
     }
 
     function fetchIndividualNFT(uint256 itemId)
@@ -132,17 +132,25 @@ contract Marketplace is ReentrancyGuard {
         view
         returns (MarketItem memory)
     {
+        require(itemId <= itemIds && itemIdToBoolean[itemId] == true, "Index not found.");
         return idToMarketItem[itemId];
     }
 
     function fetchAllNFTs() public view returns (MarketItem[] memory) {
-        uint256 totalItemCount = itemIds;
+        uint256 totalItemCount = 0;
         uint256 currentIndex = 0;
+        console.log("total items.");
+        console.log(totalItemCount);
+        for(uint256 i = 1; i <= itemIds; i++) {
+            if(itemIdToBoolean[i] == true) {
+                totalItemCount++;
+            }
+        } 
         MarketItem[] memory items = new MarketItem[](totalItemCount);
-        for (uint256 i = 0; i < totalItemCount; i++) {
-            if (itemIdToBoolean[i + 1] == true) {
+        for (uint256 i = 1; i <= itemIds; i++) {
+            if (itemIdToBoolean[i] == true) {
                 items[currentIndex] = idToMarketItem[
-                    idToMarketItem[i + 1].itemId
+                    idToMarketItem[i].itemId
                 ];
                 currentIndex += 1;
             }
