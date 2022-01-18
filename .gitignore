@@ -10,3 +10,7 @@ projectId.js
 #Hardhat files
 cache
 artifacts
+
+# everything for now
+scripts
+test
