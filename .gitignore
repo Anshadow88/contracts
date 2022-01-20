@@ -5,12 +5,9 @@ coverage.json
 typechain
 projectId.js
 .key
-
+scripts
+test
 
 #Hardhat files
 cache
 artifacts
-
-# everything for now
-scripts
-test
